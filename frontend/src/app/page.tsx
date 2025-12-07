@@ -1,3 +1,9 @@
-export default function Home() {
-	return <div className="flex min-h-screen items-center justify-center"></div>;
+import HeroSection from '../components/client/Hero';
+
+export default function LandingPage() {
+	return (
+		<div className="bg-white">
+			<HeroSection />
+		</div>
+	);
 }
