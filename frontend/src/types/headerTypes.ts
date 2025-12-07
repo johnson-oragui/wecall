@@ -4,7 +4,7 @@ export interface NavItem {
 }
 
 export interface HeaderProps {
-	appName: string;
+	appName?: string;
 	navItems?: NavItem[];
 	userEmail?: string;
 }

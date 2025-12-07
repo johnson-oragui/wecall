@@ -22,7 +22,7 @@ export default function RootLayout({
 		<html lang="en">
 			<body className={inter.className}>
 				<Header appName="WeCall" navItems={navLinks} />
-				<main className="pt-20">{children}</main>
+				<main className="pt-5">{children}</main>
 				<Footer quickLinks={quickLinks} />
 			</body>
 		</html>

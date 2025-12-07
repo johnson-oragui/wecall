@@ -8,10 +8,9 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 const Header: React.FC<HeaderProps> = ({
-	appName,
+	appName = 'WeChat',
 	navItems = [],
-	userEmail = 'johnson@gmail.com',
-	// userEmail,
+	userEmail,
 }) => {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [currentPath, setCurrentPath] = useState('/');
@@ -59,11 +58,11 @@ const Header: React.FC<HeaderProps> = ({
 	};
 
 	return (
-		<header className="sticky top-0 z-50 bg-pruple-900 shadow-xl border-b border-gray-700">
+		<header className="sticky top-0 z-50 bg-gray-900 shadow-xl border-b border-gray-700">
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div className="flex justify-between items-center h-16">
 					{/* Logo/App Name */}
-					<div className="flex items-center space-x-2 flex-shrink-0">
+					<div className="flex items-center space-x-2 shrink-0">
 						<Link
 							href="/"
 							className="text-2xl font-extrabold text-indigo-400 tracking-wider hover:text-indigo-300 transition duration-300"
