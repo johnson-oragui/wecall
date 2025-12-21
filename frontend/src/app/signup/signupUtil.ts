@@ -1,3 +1,5 @@
+import { FormData } from '@/src/types/signupTypes';
+
 export default class SignupUtil {
 	static validatePassword = (password: string): string => {
 		if (password === '') return '';
@@ -303,5 +305,35 @@ export default class SignupUtil {
 		}
 
 		return '';
+	};
+
+	static signupUser = async (
+		formData: FormData,
+	): Promise<{
+		message: string;
+		status: string;
+		data?: Record<string, unknown>;
+		statusCode: number;
+	}> => {
+		try {
+			const response = await fetch('/api/v1/auth/signup', {
+				method: 'POST',
+				body: JSON.stringify({
+					...formData,
+					password_confirm: formData.confirmPassword,
+				}),
+			});
+
+			const data = await response.json();
+
+			return { ...data, statusCode: response.status };
+		} catch (error) {
+			console.error('Error signing up User: ', error);
+			return {
+				message: 'Internal Server Error',
+				status: 'error',
+				statusCode: 500,
+			};
+		}
 	};
 }

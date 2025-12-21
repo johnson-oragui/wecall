@@ -5,5 +5,7 @@ declare namespace NodeJS {
 		NEXTAUTH_SECRET: string;
 
 		NEXT_PUBLIC_NEXTAUTH_URL: string;
+		API_BASE_URL: string;
+		BACKEND_WS_URL: string;
 	}
 }

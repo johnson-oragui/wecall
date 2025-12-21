@@ -13,8 +13,14 @@ import {
 	Bookmark,
 } from 'lucide-react';
 import { FormData } from '@/src/types/signinTypes';
+import ResultCard from '@/src/components/client/ResultCard';
 
 const SignIn: React.FC = () => {
+	const [result, setResult] = useState<{
+		status: 'success' | 'error';
+		message: string;
+		path?: string;
+	} | null>(null);
 	const [formData, setFormData] = useState<FormData>({
 		identifier: '',
 		password: '',
@@ -31,7 +37,7 @@ const SignIn: React.FC = () => {
 		}));
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setLoading(true);
 
@@ -41,6 +47,38 @@ const SignIn: React.FC = () => {
 			setLoading(false);
 			// Success message or redirection logic here
 		}, 1500);
+
+		try {
+			const response = await fetch('/api/v1/auth/signin', {
+				method: 'POST',
+				body: JSON.stringify({ ...formData, email: formData.identifier }),
+			});
+
+			const data = await response.json();
+
+			if ([201, 200].includes(response.status)) {
+				setLoading(false);
+				await fetch('/api/v1/ws/notify', { method: 'POST' });
+				localStorage.setItem(
+					'userAuth',
+					JSON.stringify({ ...data.data, tokens: undefined }),
+				);
+				setResult({
+					status: 'success',
+					message: data.message,
+					path: '/calls',
+				});
+				return;
+			}
+		} catch (error) {
+			setLoading(false);
+			setResult({
+				status: 'error',
+				message: 'Something went wrong.',
+			});
+			console.error('Error signin user: ', error);
+			return;
+		}
 	};
 
 	const handleSocialLogin = (provider: 'google' | 'github') => {
@@ -97,7 +135,7 @@ const SignIn: React.FC = () => {
 					<div className="relative">
 						<User className={iconClasses} />
 						<input
-							type="text"
+							type="email"
 							name="identifier"
 							placeholder="Email or Username"
 							value={formData.identifier}
@@ -184,6 +222,14 @@ const SignIn: React.FC = () => {
 					</a>
 				</p>
 			</div>
+			{result && (
+				<ResultCard
+					status={result.status}
+					message={result.message}
+					onClose={() => setResult(null)}
+					path={result.path}
+				/>
+			)}
 		</div>
 	);
 };
