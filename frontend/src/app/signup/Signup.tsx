@@ -16,8 +16,15 @@ import {
 import { countryCodes } from '@/src/staticData/signupData';
 import { FormData } from '@/src/types/signupTypes';
 import SignupUtil from './signupUtil';
+import { useRouter } from 'next/navigation';
+import ResultCard from '@/src/components/client/ResultCard';
 
 const SignUp: React.FC = () => {
+	const router = useRouter();
+	const [result, setResult] = useState<{
+		status: 'success' | 'error';
+		message: string;
+	} | null>(null);
 	const [formData, setFormData] = useState<FormData>({
 		email: '',
 		username: '',
@@ -62,7 +69,7 @@ const SignUp: React.FC = () => {
 		setPhoneError('');
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setLoading(true);
 		setPhoneError('');
@@ -89,17 +96,39 @@ const SignUp: React.FC = () => {
 			return;
 		}
 
-		// Simulate API call
-		setTimeout(() => {
-			console.log('Sign Up Data:', {
-				...formData,
-				...(formData.phoneNumber.trim() !== '' && {
-					phoneNumber: formData.countryCode + formData.phoneNumber,
-				}),
-			});
+		if (formData.username && usernameMessage) {
 			setLoading(false);
-			// Success message or redirection logic here
-		}, 2000);
+			return;
+		}
+
+		const data = await SignupUtil.signupUser({
+			...formData,
+			...(formData.phoneNumber.trim() !== '' && {
+				phoneNumber: formData.countryCode + formData.phoneNumber,
+			}),
+		});
+
+		if (data.status === 'success') {
+			setLoading(false);
+			setResult({
+				status: 'success',
+				message: 'Your account has been created successfully.',
+			});
+			router.push('/signin');
+			return;
+		} else if (data.statusCode === 400) {
+			setLoading(false);
+			setResult({
+				status: 'error',
+				message: data.message,
+			});
+		} else {
+			setLoading(false);
+			setResult({
+				status: 'error',
+				message: data.message || 'Something went wrong.',
+			});
+		}
 	};
 
 	const handleSocialLogin = (provider: 'google' | 'github') => {
@@ -323,7 +352,10 @@ const SignUp: React.FC = () => {
 							loading ||
 							!formData.agreedToTerms ||
 							formData.password !== formData.confirmPassword ||
-							(formData.phoneNumber !== '' && phoneError !== '')
+							(formData.phoneNumber !== '' && phoneError !== '') ||
+							(formData.username !== '' && usernameMessage !== '') ||
+							formData.email === '' ||
+							emailMessage !== ''
 						}
 					>
 						{loading ? (
@@ -345,6 +377,14 @@ const SignUp: React.FC = () => {
 					</a>
 				</p>
 			</div>
+
+			{result && (
+				<ResultCard
+					status={result.status}
+					message={result.message}
+					onClose={() => setResult(null)}
+				/>
+			)}
 		</div>
 	);
 };
