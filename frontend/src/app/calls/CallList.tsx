@@ -25,8 +25,8 @@ const CallList: React.FC<CallListProps> = React.memo(({ onSelectUser }) => {
 			setHasMore(displayedUsers.length < users.length);
 		};
 		getUsers();
-	}, [displayedUsers.length]);
-	const listRef = React.useRef(null);
+	}, []);
+	const listRef = React.useRef<HTMLUListElement>(null);
 
 	const loadMoreUsers = useCallback(() => {
 		if (isLoading || !hasMore) return;
@@ -72,7 +72,7 @@ const CallList: React.FC<CallListProps> = React.memo(({ onSelectUser }) => {
 		};
 	}, [hasMore, isLoading, loadMoreUsers]);
 
-	const totalUsers = useMemo(() => allUsers.length, []);
+	const totalUsers = useMemo(() => allUsers.length, [allUsers.length]);
 
 	return (
 		<div className="w-full max-w-xl bg-gray-800 rounded-xl shadow-2xl h-[80vh] flex flex-col">

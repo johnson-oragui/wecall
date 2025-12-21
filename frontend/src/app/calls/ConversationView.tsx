@@ -42,7 +42,7 @@ const ConversationView: React.FC<ConversationViewProps> = React.memo(
 				: partner.lastActivityType,
 		);
 
-		const messagesEndRef = useRef(null);
+		const messagesEndRef = useRef<HTMLDivElement>(null);
 
 		// Scroll to the bottom of the chat list when messages update
 		useEffect(() => {
@@ -53,7 +53,7 @@ const ConversationView: React.FC<ConversationViewProps> = React.memo(
 			e.preventDefault();
 			if (newMessageText.trim() === '' || !messages) return;
 
-			const newMsg = {
+			const newMsg: MessageI = {
 				id: Date.now(),
 				sender: 'user',
 				text: newMessageText.trim(),
@@ -68,7 +68,7 @@ const ConversationView: React.FC<ConversationViewProps> = React.memo(
 
 			// Simulate partner response
 			setTimeout(() => {
-				const autoResponse = {
+				const autoResponse: MessageI = {
 					id: Date.now() + 1,
 					sender: 'other',
 					text: `(Auto-response from ${partner.name}): Roger that.`,
